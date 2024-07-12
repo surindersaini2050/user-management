@@ -1,0 +1,31 @@
+.container {
+    table {
+        border-collapse: collapse;
+
+        tr{
+            border-bottom: 1px solid #dddddd;
+
+            td, th {
+                padding: 8px;
+                text-align: center;
+            }
+        }
+
+        tbody {
+
+            &:has(.no-records) {
+                height: 75vh;
+                text-align: center !important;
+            }
+
+            input {
+                max-width: 200px;
+                max-height: 30px;
+            }
+
+            tr:nth-child(even) {
+                background-color: #eae6e6;
+            }
+        }
+    }
+}

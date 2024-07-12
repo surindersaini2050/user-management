@@ -1,0 +1,140 @@
+<section class="container">
+    <h1 class="text-center">{{title}}</h1>
+    <table class="w-full">
+        <thead>
+            <tr>
+                <th *ngFor="let column of tableColumns; index as i">
+                    {{ column.name }}
+                    <span *ngIf="column.enableSort">
+                        <i *ngIf="!column.applySort" class="pi pi-sort-alt mx-1" (click)="sort(column.key, i)"></i>
+                        <i *ngIf="column.applySort && column.sortOrder ==='asc'" style="color:blue"
+                            class="pi pi-sort-alpha-up mx-1" (click)="sort(column.key, i, 'des')"></i>
+                        <i *ngIf="column.applySort && column.sortOrder !=='asc'" style="color:blue"
+                            class="pi pi-sort-alpha-down-alt mx-1" (click)="sort(column.key, i, 'asc')"></i>
+                    </span>
+                    <!-- <span *ngIf="column.enableFilter">
+                        <i *ngIf="!column.applyFilter" class="pi pi-filter" (click)="filter(column.key, i)"></i>
+                        <i *ngIf="column.applyFilter" class="pi pi-filter-fill" style="color:blue"
+                            (click)="filter('', i)"></i>
+                    </span> -->
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @if(!tableRows.length && !isNew) {
+            <tr class="no-records text-center">
+                <td [attr.colspan]="tableColumns.length">No Records Found</td>
+            </tr>
+            }
+            @else {
+                <tr>
+                    <td *ngFor="let column of tableColumns; index as i">
+                        @switch (column.key) {
+                            @case ('image') {}
+                            @case ('actions') {}
+                            @case ('date_of_birth') {
+                                <input id="date_of_birth" type="date" class="p-2 border-1 border-round w-full">
+                            }
+                            @default {
+                                <input [id]="column.key" [placeholder]="'Search ' + column.name" type="text" class="p-2 border-1 border-round" (input)="filter(column.key, i, $event.target)">
+                            }
+                        }
+                    </td>
+                </tr>
+            <tr *ngFor="let row of tableRows; index as i;">
+                <td class="flex justify-content-center align-items-center">
+                    <div class="img-wrapper">
+                        <img class="w-full" [src]="row.image" alt="image{{i}}">
+                    </div>
+                </td>
+                <td>
+                    @if(isEdit && editIndex==i) {
+                    <input id="name" type="text" class="p-2 border-1 border-round w-full" [(ngModel)]="form.name"
+                        required>
+                    }
+                    @else {
+                    {{row.name}}
+                    }
+                </td>
+                <td>
+                    @if(isEdit && editIndex===i) {
+                    <input id="age" type="number" class="p-2 border-1 border-round w-full" [(ngModel)]="form.age"
+                        required>
+                    }
+                    @else {
+                    {{row.age}}
+                    }
+                </td>
+                <td>
+                    @if(isEdit && editIndex===i) {
+                    <input id="gender" type="text" class="p-2 border-1 border-round w-full" [(ngModel)]="form.gender"
+                        required>
+                    }
+                    @else {
+                    {{row.gender}}
+                    }
+                </td>
+                <td>
+                    @if(isEdit && editIndex===i) {
+                    <input id="date_of_birth" type="date" class="p-2 border-1 border-round w-full"
+                        [(ngModel)]="form.date_of_birth" required>
+                    }
+                    @else {
+                    {{row.date_of_birth}}
+                    }
+                </td>
+                <td>
+                    <span class="flex justify-content-center align-items-center">
+                        @if(isEdit && editIndex===i) {
+                        <i class="pi pi-save" style="color: lightgreen" (click)="save(row, i)"></i>
+                        <i class="pi pi-trash ml-3" style="color: red" (click)="delete()"></i>
+                        }
+                        @else {
+                        <i class="pi pi-pen-to-square" style="color: lightgreen" (click)="edit(row, i);"></i>
+                        <i class="pi pi-trash ml-3" style="color: red" (click)="delete(i)"></i>
+                        }
+                    </span>
+                </td>
+            </tr>
+            }
+            <tr *ngIf="isNew">
+                <td class="img-input-wrapper">
+                    <input id="image" type="file" class="" [(ngModel)]="form.image" required>
+                </td>
+                <td>
+                    <input id="name" type="text" class="p-2 border-1 border-round w-full" [(ngModel)]="form.name"
+                        required>
+                </td>
+                <td>
+                    <input id="age" type="number" class="p-2 border-1 border-round w-full" [(ngModel)]="form.age"
+                        required>
+                </td>
+                <td>
+                    <input id="gender" type="text" class="p-2 border-1 border-round w-full" [(ngModel)]="form.gender"
+                        required>
+                </td>
+                <td>
+                    <input id="date_of_birth" type="date" class="p-2 border-1 border-round w-full"
+                        [(ngModel)]="form.date_of_birth" required>
+                </td>
+                <td>
+                    <span class="flex justify-content-center align-items-center">
+                        <i class="pi pi-save" style="color: lightgreen" (click)="save()"></i>
+                        <i class="pi pi-trash ml-3" style="color: red" (click)="delete()"></i>
+                    </span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <span class="flex justify-content-between mt-3">
+        <span class="Page-navigation flex align-items-center">
+            <a class="page-link" href="#">Previous</a>
+            <a class="page-link" href="#">1</a>
+            <a class="page-link" href="#">Next</a>
+        </span>
+        <nav class="mr-3">
+            <button class="addButton flex align-items-center" type="button" (click)="isNew = true;">
+                <i class="pi pi-plus-circle mr-2"></i> Add New</button>
+        </nav>
+    </span>
+</section>
