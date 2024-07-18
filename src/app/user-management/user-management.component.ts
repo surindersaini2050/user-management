@@ -13,7 +13,7 @@ export interface ITableColumn {
 }
 
 export interface ITableRow {
-  image: string,
+  image: any,
   name: string,
   age: number | null,
   gender: string,
@@ -88,32 +88,52 @@ export class UserManagementComponent implements OnInit {
   }
 
   refreshList() {
-    this.tableRows = this.getList();
+    this.tableRows = JSON.parse(localStorage.getItem(this.lsTableName) || '[]') || [];
   }
 
-  getList() {
-    return JSON.parse(localStorage.getItem(this.lsTableName) || '[]') || [];
+  addForm() {
+    this.isNew = true;
+    this.form = this.defaultformData;
   }
 
   edit(row: ITableRow, index: number) {
     this.isEdit = true;
+    this.isNew = false;
     this.editIndex = index;
-    this.form = row
+    this.form = row;
   }
 
-  save(row?: ITableRow, index?: number) {
-    if (!index) {
-      this.tableRows.push(this.form)
-      this.isNew = false;
+  uploadImage(event: any) {
+    const file: File = event.target.files[0] || null;
+    if (file?.name) {
+      const reader = new FileReader();
+      reader.onload = (e: ProgressEvent<FileReader>) => {
+        this.form.image = e.target?.result || '';
+      };
+      reader.readAsDataURL(file);
     }
-    else {
-      this.tableRows[index] = this.form;
+    return file?.name? file : null;
+  }
+
+  validate() {
+    return (this.form.image && this.form.name && this.form.age && this.form.gender && this.form.date_of_birth)? true : false
+  }
+
+  save() {
+    const isValid = this.validate();
+   if(isValid) {
+    if ((this.editIndex || this.editIndex === 0) && !this.isNew) {
+      this.tableRows[this.editIndex] = this.form;
       this.isEdit = false;
       this.editIndex = null;
     }
+    else {
+      this.tableRows.push(this.form)
+      this.isNew = false;
+    }
     localStorage.setItem(this.lsTableName, JSON.stringify(this.tableRows))
-    this.form = this.defaultformData;
-    this.refreshList();
+    this.resetForm();
+   }
   }
 
   sort(key: string, index: number, sOrder?: any) {
@@ -132,21 +152,21 @@ export class UserManagementComponent implements OnInit {
     }
   }
 
-  delete(index?: number) {
-    if (index || index === 0) {
-      let msg = 'Are you sure, You want to delete this row permanently'
-      if (confirm(msg) == true) {
-        this.tableRows.splice(index, 1);
-        localStorage.setItem(this.lsTableName, JSON.stringify(this.tableRows))
-        this.refreshList();
-      }
+  delete(index: number) {
+    let msg = 'Are you sure, You want to delete this row permanently'
+    if (confirm(msg) == true) {
+      this.tableRows.splice(index, 1);
+      localStorage.setItem(this.lsTableName, JSON.stringify(this.tableRows))
+      this.refreshList();
     }
-    else {
-      this.isNew = false;
-      this.isEdit = false;
-      this.editIndex = null;
-      this.form = this.defaultformData;
-    }
+  }
+
+  resetForm() {
+    this.isNew = false;
+    this.isEdit = false;
+    this.editIndex = null;
+    this.form = this.defaultformData;
+    this.refreshList();
   }
 
 }

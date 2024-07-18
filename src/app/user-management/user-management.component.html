@@ -27,28 +27,35 @@
             </tr>
             }
             @else {
-                <tr>
-                    <td *ngFor="let column of tableColumns; index as i">
-                        @switch (column.key) {
-                            @case ('image') {}
-                            @case ('actions') {}
-                            @case ('date_of_birth') {
-                                <input id="date_of_birth" type="date" class="p-2 border-1 border-round w-full">
-                            }
-                            @default {
-                                <input [id]="column.key" [placeholder]="'Search ' + column.name" type="text" class="p-2 border-1 border-round" (input)="filter(column.key, i, $event.target)">
-                            }
-                        }
-                    </td>
-                </tr>
+            <tr>
+                <td *ngFor="let column of tableColumns; index as i">
+                    @switch (column.key) {
+                    @case ('image') {}
+                    @case ('actions') {}
+                    @case ('date_of_birth') {
+                    <input id="date_of_birth" type="date" class="p-2 border-1 border-round w-full">
+                    }
+                    @default {
+                    <input [id]="column.key" [placeholder]="'Search ' + column.name" type="text"
+                        class="p-2 border-1 border-round" (input)="filter(column.key, i, $event.target)">
+                    }
+                    }
+                </td>
+            </tr>
             <tr *ngFor="let row of tableRows; index as i;">
                 <td class="flex justify-content-center align-items-center">
+                    @if(isEdit && editIndex===i) {
+                    <input id="image" type="file" class="" [(ngModel)]="form.image" (change)="uploadImage($event)"
+                        required>
+                    }
+                    @else {
                     <div class="img-wrapper">
-                        <img class="w-full" [src]="row.image" alt="image{{i}}">
+                        <img class="w-full h-full" [src]="row.image" alt="image{{i}}">
                     </div>
+                    }
                 </td>
                 <td>
-                    @if(isEdit && editIndex==i) {
+                    @if(isEdit && editIndex===i) {
                     <input id="name" type="text" class="p-2 border-1 border-round w-full" [(ngModel)]="form.name"
                         required>
                     }
@@ -86,8 +93,8 @@
                 <td>
                     <span class="flex justify-content-center align-items-center">
                         @if(isEdit && editIndex===i) {
-                        <i class="pi pi-save" style="color: lightgreen" (click)="save(row, i)"></i>
-                        <i class="pi pi-trash ml-3" style="color: red" (click)="delete()"></i>
+                        <i class="pi pi-save" style="color: lightgreen" (click)="save()"></i>
+                        <i class="pi pi-undo ml-3" style="color: red" (click)="resetForm()"></i>
                         }
                         @else {
                         <i class="pi pi-pen-to-square" style="color: lightgreen" (click)="edit(row, i);"></i>
@@ -99,7 +106,8 @@
             }
             <tr *ngIf="isNew">
                 <td class="img-input-wrapper">
-                    <input id="image" type="file" class="" [(ngModel)]="form.image" required>
+                    <input id="image" type="file" class="" [(ngModel)]="form.image" (change)="uploadImage($event)"
+                        required>
                 </td>
                 <td>
                     <input id="name" type="text" class="p-2 border-1 border-round w-full" [(ngModel)]="form.name"
@@ -120,7 +128,7 @@
                 <td>
                     <span class="flex justify-content-center align-items-center">
                         <i class="pi pi-save" style="color: lightgreen" (click)="save()"></i>
-                        <i class="pi pi-trash ml-3" style="color: red" (click)="delete()"></i>
+                        <i class="pi pi-trash ml-3" style="color: red" (click)="resetForm()"></i>
                     </span>
                 </td>
             </tr>
@@ -133,7 +141,7 @@
             <a class="page-link" href="#">Next</a>
         </span>
         <nav class="mr-3">
-            <button class="addButton flex align-items-center" type="button" (click)="isNew = true;">
+            <button *ngIf="!isEdit" class="addButton flex align-items-center" type="button" (click)="addForm()">
                 <i class="pi pi-plus-circle mr-2"></i> Add New</button>
         </nav>
     </span>
