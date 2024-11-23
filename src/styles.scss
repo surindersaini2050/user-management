@@ -1,4 +1,10 @@
 .container {
+    
+    input {
+        max-width: 200px;
+        max-height: 30px;
+    }
+
     table {
         border-collapse: collapse;
 
@@ -14,13 +20,8 @@
         tbody {
 
             &:has(.no-records) {
-                height: 75vh;
+                height: calc(100vh - 220px);
                 text-align: center !important;
-            }
-
-            input {
-                max-width: 200px;
-                max-height: 30px;
             }
 
             tr:nth-child(even) {

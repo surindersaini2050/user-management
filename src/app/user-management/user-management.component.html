@@ -12,11 +12,21 @@
                         <i *ngIf="column.applySort && column.sortOrder !=='asc'" style="color:blue"
                             class="pi pi-sort-alpha-down-alt mx-1" (click)="sort(column.key, i, 'asc')"></i>
                     </span>
-                    <!-- <span *ngIf="column.enableFilter">
-                        <i *ngIf="!column.applyFilter" class="pi pi-filter" (click)="filter(column.key, i)"></i>
-                        <i *ngIf="column.applyFilter" class="pi pi-filter-fill" style="color:blue"
-                            (click)="filter('', i)"></i>
-                    </span> -->
+                </th>
+            </tr>
+            <tr>
+                <th *ngFor="let column of tableColumns; index as i">
+                    @switch (column.key) {
+                    @case ('image') {}
+                    @case ('actions') {}
+                    @case ('date_of_birth') {
+                    <input id="date_of_birth" type="date" class="p-2 border-1 border-round w-full" (change)="filter(column.key, $event)">
+                    }
+                    @default {
+                    <input [id]="column.key" [placeholder]="'Search ' + column.name" type="text"
+                        class="p-2 border-1 border-round w-full" (input)="filter(column.key, $event)">
+                    }
+                    }
                 </th>
             </tr>
         </thead>
@@ -27,21 +37,6 @@
             </tr>
             }
             @else {
-            <tr>
-                <td *ngFor="let column of tableColumns; index as i">
-                    @switch (column.key) {
-                    @case ('image') {}
-                    @case ('actions') {}
-                    @case ('date_of_birth') {
-                    <input id="date_of_birth" type="date" class="p-2 border-1 border-round w-full">
-                    }
-                    @default {
-                    <input [id]="column.key" [placeholder]="'Search ' + column.name" type="text"
-                        class="p-2 border-1 border-round" (input)="filter(column.key, i, $event.target)">
-                    }
-                    }
-                </td>
-            </tr>
             <tr *ngFor="let row of tableRows; index as i;">
                 <td class="flex justify-content-center align-items-center">
                     @if(isEdit && editIndex===i) {
@@ -141,7 +136,7 @@
             <a class="page-link" href="#">Next</a>
         </span>
         <nav class="mr-3">
-            <button *ngIf="!isEdit" class="addButton flex align-items-center" type="button" (click)="addForm()">
+            <button *ngIf="!isEdit && !isNew" class="addButton flex align-items-center" type="button" (click)="addForm()">
                 <i class="pi pi-plus-circle mr-2"></i> Add New</button>
         </nav>
     </span>

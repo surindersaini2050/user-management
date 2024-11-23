@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { UserListFilterPipe } from '../pipes/user-list-filter.pipe';
 
 export interface ITableColumn {
   key: string,
@@ -24,6 +25,7 @@ export interface ITableRow {
   selector: 'app-user-management',
   standalone: true,
   imports: [CommonModule, FormsModule],
+  providers: [UserListFilterPipe],
   templateUrl: './user-management.component.html',
   styleUrl: './user-management.component.scss'
 })
@@ -79,21 +81,21 @@ export class UserManagementComponent implements OnInit {
     gender: '',
     date_of_birth: null,
   };
-  form: ITableRow = this.defaultformData;
+  form: ITableRow = { ...this.defaultformData };
 
-  constructor() { }
+  constructor(private userListFilterPipe: UserListFilterPipe) { }
 
   ngOnInit(): void {
     this.refreshList();
   }
 
   refreshList() {
-    this.tableRows = JSON.parse(localStorage.getItem(this.lsTableName) || '[]') || [];
+    this.tableRows = JSON.parse(localStorage.getItem(this.lsTableName) || '[]');
   }
 
   addForm() {
     this.isNew = true;
-    this.form = this.defaultformData;
+    this.form = { ...this.defaultformData };
   }
 
   edit(row: ITableRow, index: number) {
@@ -112,28 +114,28 @@ export class UserManagementComponent implements OnInit {
       };
       reader.readAsDataURL(file);
     }
-    return file?.name? file : null;
+    return file?.name ? file : null;
   }
 
   validate() {
-    return (this.form.image && this.form.name && this.form.age && this.form.gender && this.form.date_of_birth)? true : false
+    return (this.form.image && this.form.name && this.form.age && this.form.gender && this.form.date_of_birth) ? true : false
   }
 
   save() {
     const isValid = this.validate();
-   if(isValid) {
-    if ((this.editIndex || this.editIndex === 0) && !this.isNew) {
-      this.tableRows[this.editIndex] = this.form;
-      this.isEdit = false;
-      this.editIndex = null;
+    if (isValid) {
+      if ((this.editIndex || this.editIndex === 0) && !this.isNew) {
+        this.tableRows[this.editIndex] = this.form;
+        this.isEdit = false;
+        this.editIndex = null;
+      }
+      else {
+        this.tableRows.push(this.form)
+        this.isNew = false;
+      }
+      localStorage.setItem(this.lsTableName, JSON.stringify(this.tableRows))
+      this.resetForm();
     }
-    else {
-      this.tableRows.push(this.form)
-      this.isNew = false;
-    }
-    localStorage.setItem(this.lsTableName, JSON.stringify(this.tableRows))
-    this.resetForm();
-   }
   }
 
   sort(key: string, index: number, sOrder?: any) {
@@ -143,13 +145,9 @@ export class UserManagementComponent implements OnInit {
     this.tableColumns[index].applySort = true;
   }
 
-  filter(key: string, index: number, event: any) {
-    console.log(event);
-    if (key && index) {
-      this.tableColumns[index].applyFilter = true;
-    } else {
-      this.tableColumns[index].applyFilter = false;
-    }
+  filter(key: string, event: any) {
+    const inputValue = (event.target as HTMLInputElement).value;
+    this.tableRows = this.userListFilterPipe.transform(this.tableRows, inputValue, key);
   }
 
   delete(index: number) {
@@ -165,7 +163,7 @@ export class UserManagementComponent implements OnInit {
     this.isNew = false;
     this.isEdit = false;
     this.editIndex = null;
-    this.form = this.defaultformData;
+    this.form = { ...this.defaultformData };
     this.refreshList();
   }
 
